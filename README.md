@@ -1,16 +1,14 @@
-## Hi there 👋
+# BatteryGPT
 
-<!--
-**wtj051/wtj051** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+BatteryGPT is a deep learning framework designed for predicting battery State-of-Health (SOH) and Remaining Useful Life (RUL) using multi-modal sensor data.
 
-Here are some ideas to get you started:
+## Features
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+- Multi-modal fusion with attention mechanism.
+- Dynamic masking for improved generalization.
+- Windowed Transformer for multi-scale temporal feature extraction.
+
+## Installation
+
+```bash
+pip install -r requirements.txt
