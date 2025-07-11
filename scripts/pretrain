@@ -1,0 +1,27 @@
+import torch
+from models.battery_gpt import BatteryGPT
+from models.utils import dynamic_masking
+from data.load_data import load_pretrain_data
+import yaml
+
+with open('../configs/pretrain_config.yaml', 'r') as f:
+    config = yaml.safe_load(f)
+
+model = BatteryGPT(**config['model_params']).cuda()
+optimizer = torch.optim.Adam(model.parameters(), lr=config['train']['lr'])
+criterion = nn.MSELoss()
+
+data_loader = load_pretrain_data(config['data']['path'], config['train']['batch_size'])
+
+for epoch in range(config['train']['epochs']):
+    model.train()
+    for inputs in data_loader:
+        masked_inputs, mask = dynamic_masking(inputs.cuda())
+        optimizer.zero_grad()
+        outputs, _ = model(masked_inputs)
+        loss = criterion(outputs[mask], inputs[mask])
+        loss.backward()
+        optimizer.step()
+    print(f'Epoch {epoch+1}/{config["train"]["epochs"]}, Loss: {loss.item()}')
+
+torch.save(model.state_dict(), '../models/battery_gpt_pretrained.pth')
