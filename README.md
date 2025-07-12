@@ -1,4 +1,4 @@
-# 🚀 BatteryGPT: Generative Pre-training for Battery SOH and RUL Estimation
+# 🚀 BatteryGPT: A Generative Pre-Training Method for Battery Degradation
 
 ---
 
