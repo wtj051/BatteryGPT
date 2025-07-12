@@ -1,0 +1,12 @@
+import pandas as pd
+import numpy as np
+
+def preprocess_dataset(filepath):
+    df = pd.read_csv(filepath)
+    df.interpolate(method='linear', inplace=True)
+    df.fillna(method='bfill', inplace=True)
+    voltage = df['voltage'].values
+    current = df['current'].values
+    temperature = df['temperature'].values
+    data = np.stack([voltage, current, temperature], axis=-1)
+    return data
