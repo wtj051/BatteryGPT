@@ -1,0 +1,185 @@
+# ======================================================================
+# BatteryGPT master config
+# Works with: scripts/train.py, scripts/evaluate.py, run_pipeline.sh
+# ======================================================================
+
+seed: 42
+device: "cuda"              # "cuda" | "cpu"
+num_workers: 4
+save_dir: "checkpoints"
+results_dir: "results"
+log_every_n_steps: 50
+
+# -------------------------
+# Model & Loss definitions
+# -------------------------
+model:
+  # Modalities: Voltage / Current / Temperature
+  # If your preprocessing changes feature dims, update these accordingly.
+  hidden_dim: 128                 # GRU/Transformer hidden size
+  n_heads: 8
+  transformer_layers: 6
+  # Windowed multi-scale attention (cycles), per paper: short=5, long=50
+  short_win: 5
+  long_win: 50
+  # GRU encoders (per modality)
+  gru_layers: 2
+  # Positional encoding length used in WindowedTransformer
+  max_pos_len: 500
+  # Initial fusion weight between short/long branches is learnable in code
+
+loss:
+  # Total loss = λ_mask * L_mask + λ_consistency * L_cons + λ_feature * L_feat
+  lambda_mask: 0.5           # Best on NASA/ISU per paper’s analysis
+  lambda_consistency: 0.2
+  lambda_feature: 0.3
+
+masking:
+  # Dynamic masking parameters (self-supervised pre-training)
+  importance_weight: 0.7      # balance(std, gradient) in importance score
+  prob_min: 0.10              # mask ratio lower bound (paper: 0.1–0.5)
+  prob_max: 0.50              # mask ratio upper bound
+
+optimizer:
+  name: "adam"
+  lr: 0.0005                  # default; overridden below per stage/dataset
+  weight_decay: 0.0
+  betas: [0.9, 0.999]
+
+scheduler:
+  name: "none"                # or "cosine", "step", etc.
+  params: {}
+
+# ----------------------------------------
+# Training stages (Pre-train & Fine-tune)
+# ----------------------------------------
+train:
+  precision: "fp32"
+  gradient_clip_norm: 1.0
+
+pretrain:
+  enabled: true
+  epochs: 30000               # Paper Table IX
+  lr: 0.0005                  # Paper Table IX
+  batch_size: 32              # dataset-dependent in paper; 32 as default
+  save_every: 1000
+  mask_ratio: 0.30            # in [0.10, 0.50], mid-point default
+
+finetune:
+  enabled: true
+  epochs: 100                 # Paper Table IX
+  # dataset-dependent overrides below
+  defaults:
+    lr: 0.0001
+    batch_size: 32
+  # Empirical guidance from paper:
+  # - NASA: smaller LR / smaller batch for stability on small data
+  # - CALCE/ISU/SNL: larger LR or batch due to more data
+  per_dataset:
+    NASA:
+      lr: 0.00001
+      batch_size: 16
+    NASA-random:
+      lr: 0.00005
+      batch_size: 32
+    Oxford:
+      lr: 0.0001
+      batch_size: 24
+    CALCE:
+      lr: 0.0005
+      batch_size: 32
+    SNL:
+      lr: 0.0005
+      batch_size: 32
+    ISU:
+      lr: 0.0005
+      batch_size: 32
+
+# ----------------
+# Evaluation setup
+# ----------------
+eval:
+  metrics: ["MAE", "RE"]     # Mean Absolute Error, Relative Error
+  # Early-cycle RUL evaluation starts (per paper)
+  early_cycle_start:
+    NASA: 10
+    NASA-random: 1000
+    Oxford: 200
+    CALCE: 50
+    SNL: 200
+    ISU: 100
+  # Output files
+  save_predictions: true
+  save_metrics: true
+
+# -------------
+# Data settings
+# -------------
+data:
+  root: "data"                # top-level data dir in repo
+  # You can switch dataset via CLI: --dataset NASA (or one below)
+  dataset: "NASA"
+
+  # Standard preprocessing options used in the provided loaders
+  preprocess:
+    interpolate: true         # linear interpolation for missing values
+    normalize: true           # per-feature z-score (fit on train)
+
+  # Partitions per paper Appendix (Table VIII)
+  partitions:
+    NASA:
+      pretrain: ["B5","B6","B7","B29","B30","B31","B33","B34","B36","B41","B42","B43","B44","B46","B47","B48"]
+      finetune: ["B32","B45"]
+      test: ["B18","B49"]
+      path: "${data.root}/NASA"
+    NASA-random:
+      pretrain: ["RW1","RW2","RW3","RW4","RW5","RW6","RW9","RW10"]
+      finetune: ["RW7","RW12"]
+      test: ["RW8","RW11"]
+      path: "${data.root}/NASA-random"
+    Oxford:
+      pretrain: ["OX1","OX2","OX3","OX4"]
+      finetune: ["OX5","OX6"]
+      test: ["OX7","OX8"]
+      path: "${data.root}/Oxford"
+    CALCE:
+      pretrain: ["CS3","CS8","CS9","CS21","CS33","CS34","CS37","CS38","CX3","CX8","CX16","CX33","CX34","CX35","CX36"]
+      finetune: ["CS35","CX37"]
+      test: ["CS36","CX38"]
+      path: "${data.root}/CALCE"
+    SNL:
+      # Pre-train cells (as listed; line break kept for readability)
+      pretrain:
+        ["LFP-a15","LFP-b15","LFP-a25","LFP-b25","LFP-c25","LFP-a35","LFP-c35",
+         "NCA-a15","NCA-b15","NCA-c15","NCA-a25","NCA-b25","NCA-a35","NCA-b35",
+         "NCA-c35","NMC-a15"]
+      finetune: ["LFP-c15","NCA-c25"]
+      test: ["LFP-b35","NMC-a25"]
+      path: "${data.root}/SNL"
+    ISU:
+      pretrain:
+        ["G1C1","G1C2","G1C3","G1C4","G2C1","G2C2","G2C4",
+         "G3C1","G3C3","G3C4","G4C1","G4C2","G4C3","G5C1","G5C2","G5C3"]
+      finetune: ["G2C3","G4C4"]
+      test: ["G3C2","G5C4"]
+      path: "${data.root}/ISU"
+
+# --------------------------------
+# CLI ↔ config convenience mapping
+# --------------------------------
+entrypoint:
+  # Used by run_pipeline.sh and scripts:
+  #   python scripts/train.py    --config configs/battery_gpt.yaml --dataset NASA
+  #   python scripts/evaluate.py --config configs/battery_gpt.yaml --dataset NASA --checkpoint checkpoints/battery_gpt_NASA.pth
+  dataset_arg: "--dataset"
+  checkpoint_pattern: "checkpoints/battery_gpt_${dataset}.pth"
+  eval_output_pattern: "results/${dataset}_eval_results.txt"
+
+# -------------------------
+# Reproducibility artefacts
+# -------------------------
+artifacts:
+  save_checkpoints: true
+  save_every_epoch: false
+  save_best_only: true
+  track_training_curve: true   # scripts write CSV / stdout
