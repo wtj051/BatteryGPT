@@ -1,0 +1,127 @@
+```json
+{
+  "schema_version": "1.0",
+  "artifacts": [
+    {
+      "dataset": "NASA",
+      "stage": "pretrain",
+      "filename": "battery_gpt_NASA_pretrain.pth",
+      "url": "https://github.com/<ORG>/<REPO>/releases/download/v1.0.0/battery_gpt_NASA_pretrain.pth",
+      "size_bytes": 0,
+      "sha256": "<TO_BE_FILLED>",
+      "trained_with": {
+        "config": "configs/battery_gpt.yaml",
+        "epochs": 30000,
+        "lr": 0.0005,
+        "batch_size": 32
+      },
+      "metrics": {
+        "note": "pretraining—metrics N/A"
+      }
+    },
+    {
+      "dataset": "NASA",
+      "stage": "finetune",
+      "filename": "battery_gpt_NASA.pth",
+      "url": "https://github.com/<ORG>/<REPO>/releases/download/v1.0.0/battery_gpt_NASA.pth",
+      "size_bytes": 0,
+      "sha256": "<TO_BE_FILLED>",
+      "trained_with": {
+        "config": "configs/battery_gpt.yaml",
+        "epochs": 100,
+        "lr": 0.00001,
+        "batch_size": 16
+      },
+      "metrics": {
+        "SOH_MAE": "<TO_BE_FILLED>",
+        "RUL_MAE": "<TO_BE_FILLED>",
+        "RUL_RE_at_early_cycle": "<TO_BE_FILLED>",
+        "eval_split": "test"
+      }
+    },
+
+    {
+      "dataset": "Oxford",
+      "stage": "finetune",
+      "filename": "battery_gpt_Oxford.pth",
+      "url": "https://github.com/<ORG>/<REPO>/releases/download/v1.0.0/battery_gpt_Oxford.pth",
+      "size_bytes": 0,
+      "sha256": "<TO_BE_FILLED>",
+      "trained_with": {
+        "config": "configs/battery_gpt.yaml",
+        "epochs": 100,
+        "lr": 0.0001,
+        "batch_size": 24
+      },
+      "metrics": {
+        "SOH_MAE": "<TO_BE_FILLED>",
+        "RUL_MAE": "<TO_BE_FILLED>",
+        "RUL_RE_at_early_cycle": "<TO_BE_FILLED>",
+        "eval_split": "test"
+      }
+    },
+
+    {
+      "dataset": "CALCE",
+      "stage": "finetune",
+      "filename": "battery_gpt_CALCE.pth",
+      "url": "https://github.com/<ORG>/<REPO>/releases/download/v1.0.0/battery_gpt_CALCE.pth",
+      "size_bytes": 0,
+      "sha256": "<TO_BE_FILLED>",
+      "trained_with": {
+        "config": "configs/battery_gpt.yaml",
+        "epochs": 100,
+        "lr": 0.0005,
+        "batch_size": 32
+      },
+      "metrics": {
+        "SOH_MAE": "<TO_BE_FILLED>",
+        "RUL_MAE": "<TO_BE_FILLED>",
+        "RUL_RE_at_early_cycle": "<TO_BE_FILLED>",
+        "eval_split": "test"
+      }
+    },
+
+    {
+      "dataset": "SNL",
+      "stage": "finetune",
+      "filename": "battery_gpt_SNL.pth",
+      "url": "https://github.com/<ORG>/<REPO>/releases/download/v1.0.0/battery_gpt_SNL.pth",
+      "size_bytes": 0,
+      "sha256": "<TO_BE_FILLED>",
+      "trained_with": {
+        "config": "configs/battery_gpt.yaml",
+        "epochs": 100,
+        "lr": 0.0005,
+        "batch_size": 32
+      },
+      "metrics": {
+        "SOH_MAE": "<TO_BE_FILLED>",
+        "RUL_MAE": "<TO_BE_FILLED>",
+        "RUL_RE_at_early_cycle": "<TO_BE_FILLED>",
+        "eval_split": "test"
+      }
+    },
+
+    {
+      "dataset": "ISU",
+      "stage": "finetune",
+      "filename": "battery_gpt_ISU.pth",
+      "url": "https://github.com/<ORG>/<REPO>/releases/download/v1.0.0/battery_gpt_ISU.pth",
+      "size_bytes": 0,
+      "sha256": "<TO_BE_FILLED>",
+      "trained_with": {
+        "config": "configs/battery_gpt.yaml",
+        "epochs": 100,
+        "lr": 0.0005,
+        "batch_size": 32
+      },
+      "metrics": {
+        "SOH_MAE": "<TO_BE_FILLED>",
+        "RUL_MAE": "<TO_BE_FILLED>",
+        "RUL_RE_at_early_cycle": "<TO_BE_FILLED>",
+        "eval_split": "test"
+      }
+    }
+  ]
+}
