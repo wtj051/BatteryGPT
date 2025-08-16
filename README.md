@@ -7,7 +7,7 @@
 **BatteryGPT** is a transformer-based generative pre-training model for accurate Battery State-of-Health (SOH) and Remaining Useful Life (RUL) estimation.  
 This repository provides complete training and evaluation pipelines to fully reproduce the results reported in our paper.
 
-> ⚠️ **Note:** This repository only includes the training and evaluation code for BatteryGPT. Comparison models (e.g., LSTM, Transformer, PINN) are NOT included.
+> ⚠️ **Note:** This repository only includes the training and evaluation code for BatteryGPT. 
 
 ---
 
